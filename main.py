@@ -214,5 +214,23 @@ async def main():
   await dp.start_polling(bot)
 
 
-if __name__ == "__main__":
-  asyncio.run(main())
+import os
+from aiohttp import web
+
+async def handle(request):
+    return web.Response(text="Bot faol!")
+
+async def on_startup(dp):
+    app = web.Application()
+    app.router.add_get("/", handle)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    port = int(os.environ.get("PORT", 8080))
+    site = web.TCPSite(runner, "0.0.0.0", port)
+    await site.start()
+
+if __name__ == '__main__':
+    from aiogram import executor
+    print("Bot ishga tushdi...")
+    executor.start_polling(dp, skip_updates=True, on_startup=on_startup)
+
